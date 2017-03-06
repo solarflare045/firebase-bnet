@@ -19,8 +19,8 @@ const FIREBASE_CREDENTIAL = config.get<Object>('firebase.credentials');
 
 firebase.initializeApp({
   databaseURL: FIREBASE_DB,
-  credential: admin.credential.cert(FIREBASE_CREDENTIAL),
-})
+  credential: firebase.credential.cert(FIREBASE_CREDENTIAL),
+});
 
 passport.use(new Strategy({
   clientID: BNET_ID,

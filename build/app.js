@@ -42,7 +42,7 @@ var FIREBASE_DB = _config2.default.get('firebase.databaseURL');
 var FIREBASE_CREDENTIAL = _config2.default.get('firebase.credentials');
 _firebaseAdmin2.default.initializeApp({
     databaseURL: FIREBASE_DB,
-    credential: admin.credential.cert(FIREBASE_CREDENTIAL)
+    credential: _firebaseAdmin2.default.credential.cert(FIREBASE_CREDENTIAL)
 });
 _passport2.default.use(new _passportBnet.Strategy({
     clientID: BNET_ID,

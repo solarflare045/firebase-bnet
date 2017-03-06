@@ -25,9 +25,8 @@ passport.use(new Strategy({
 
 class ApiServer extends Server {
   protected api(): void {
-    this.app.get('/beans', (req, res) => res.send('Helo'));
     this.app.get(URL_BASE, passport.authenticate('bnet'));
-    this.app.get(URL_CALLBACK, passport.authenticate('bnet', { failureRedirect: '/' }), (req, res) => res.redirect('/'));
+    this.app.get(URL_CALLBACK, passport.authenticate('bnet', { session: false }), (req, res) => res.redirect(req.user));
   }
 }
 

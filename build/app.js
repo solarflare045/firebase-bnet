@@ -55,12 +55,9 @@ var ApiServer = function (_Server) {
     _createClass(ApiServer, [{
         key: 'api',
         value: function api() {
-            this.app.get('/beans', function (req, res) {
-                return res.send('Helo');
-            });
             this.app.get(URL_BASE, _passport2.default.authenticate('bnet'));
-            this.app.get(URL_CALLBACK, _passport2.default.authenticate('bnet', { failureRedirect: '/' }), function (req, res) {
-                return res.redirect('/');
+            this.app.get(URL_CALLBACK, _passport2.default.authenticate('bnet', { session: false }), function (req, res) {
+                return res.redirect(req.user);
             });
         }
     }]);

@@ -16,6 +16,10 @@ var _http = require('http');
 
 var _http2 = _interopRequireDefault(_http);
 
+var _firebaseAdmin = require('firebase-admin');
+
+var _firebaseAdmin2 = _interopRequireDefault(_firebaseAdmin);
+
 var _express = require('./express');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -31,8 +35,11 @@ var BNET_SECRET = _config2.default.get('bnet.secret');
 var BNET_CALLBACK = _config2.default.get('bnet.callback');
 var HOST_NAME = _config2.default.get('server.host');
 var HOST_PORT = _config2.default.get('server.port');
+var HOST_CALLBACK = _config2.default.get('server.callback');
 var URL_BASE = _config2.default.get('urls.base');
 var URL_CALLBACK = _config2.default.get('urls.callback');
+var FIREBASE_DB = _config2.default.get('firebase.databaseURL');
+var FIREBASE_CREDENTIAL = _config2.default.get('firebase.credentials');
 _passport2.default.use(new _passportBnet.Strategy({
     clientID: BNET_ID,
     clientSecret: BNET_SECRET,
@@ -57,7 +64,12 @@ var ApiServer = function (_Server) {
         value: function api() {
             this.app.get(URL_BASE, _passport2.default.authenticate('bnet'));
             this.app.get(URL_CALLBACK, _passport2.default.authenticate('bnet', { session: false }), function (req, res) {
-                return res.send(req.user);
+                var tag = req.user.battletag;
+                _firebaseAdmin2.default.auth().createCustomToken('bt|' + tag).then(function (token) {
+                    res.redirect(HOST_CALLBACK + '?token=' + token);
+                }).catch(function (err) {
+                    res.status(500).send(err);
+                });
             });
         }
     }]);

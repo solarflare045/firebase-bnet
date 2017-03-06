@@ -1,7 +1,7 @@
 import config from 'config';
 import passport from 'passport';
 import { Strategy } from 'passport-bnet';
-import https from 'https';
+import http from 'http';
 
 import { Server } from './express';
 
@@ -10,8 +10,6 @@ const BNET_SECRET = config.get<string>('bnet.secret');
 const BNET_CALLBACK = config.get<string>('bnet.callback');
 const HOST_NAME = config.get<string>('server.host');
 const HOST_PORT = config.get<number>('server.port');
-const HOST_KEY = config.get<string>('server.key');
-const HOST_CERT = config.get<string>('server.certificate');
 const URL_BASE = config.get<string>('urls.base');
 const URL_CALLBACK = config.get<string>('urls.callback');
 
@@ -34,4 +32,4 @@ class ApiServer extends Server {
 }
 
 const server = new ApiServer();
-https.createServer({ key: HOST_KEY, cert: HOST_CERT }, server.app).listen(HOST_PORT, HOST_NAME);
+http.createServer(server.app).listen(HOST_PORT, HOST_NAME);

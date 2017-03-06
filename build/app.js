@@ -12,9 +12,9 @@ var _passport2 = _interopRequireDefault(_passport);
 
 var _passportBnet = require('passport-bnet');
 
-var _https = require('https');
+var _http = require('http');
 
-var _https2 = _interopRequireDefault(_https);
+var _http2 = _interopRequireDefault(_http);
 
 var _express = require('./express');
 
@@ -31,8 +31,6 @@ var BNET_SECRET = _config2.default.get('bnet.secret');
 var BNET_CALLBACK = _config2.default.get('bnet.callback');
 var HOST_NAME = _config2.default.get('server.host');
 var HOST_PORT = _config2.default.get('server.port');
-var HOST_KEY = _config2.default.get('server.key');
-var HOST_CERT = _config2.default.get('server.certificate');
 var URL_BASE = _config2.default.get('urls.base');
 var URL_CALLBACK = _config2.default.get('urls.callback');
 _passport2.default.use(new _passportBnet.Strategy({
@@ -71,4 +69,4 @@ var ApiServer = function (_Server) {
 }(_express.Server);
 
 var server = new ApiServer();
-_https2.default.createServer({ key: HOST_KEY, cert: HOST_CERT }, server.app).listen(HOST_PORT, HOST_NAME);
+_http2.default.createServer(server.app).listen(HOST_PORT, HOST_NAME);

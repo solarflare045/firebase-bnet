@@ -26,7 +26,7 @@ passport.use(new Strategy({
 class ApiServer extends Server {
   protected api(): void {
     this.app.get(URL_BASE, passport.authenticate('bnet'));
-    this.app.get(URL_CALLBACK, passport.authenticate('bnet', { session: false }), (req, res) => res.redirect(req.user));
+    this.app.get(URL_CALLBACK, passport.authenticate('bnet', { session: false }), (req, res) => res.send(req.user));
   }
 }
 

@@ -17,6 +17,11 @@ const URL_CALLBACK = config.get<string>('urls.callback');
 const FIREBASE_DB = config.get<string>('firebase.databaseURL');
 const FIREBASE_CREDENTIAL = config.get<Object>('firebase.credentials');
 
+firebase.initializeApp({
+  databaseURL: FIREBASE_DB,
+  credential: admin.credential.cert(FIREBASE_CREDENTIAL),
+})
+
 passport.use(new Strategy({
   clientID: BNET_ID,
   clientSecret: BNET_SECRET,

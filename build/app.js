@@ -40,6 +40,10 @@ var URL_BASE = _config2.default.get('urls.base');
 var URL_CALLBACK = _config2.default.get('urls.callback');
 var FIREBASE_DB = _config2.default.get('firebase.databaseURL');
 var FIREBASE_CREDENTIAL = _config2.default.get('firebase.credentials');
+_firebaseAdmin2.default.initializeApp({
+    databaseURL: FIREBASE_DB,
+    credential: admin.credential.cert(FIREBASE_CREDENTIAL)
+});
 _passport2.default.use(new _passportBnet.Strategy({
     clientID: BNET_ID,
     clientSecret: BNET_SECRET,

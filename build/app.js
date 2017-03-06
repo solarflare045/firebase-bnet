@@ -57,7 +57,8 @@ _passport2.default.use(new _passportBnet.Strategy({
     region: 'us',
     scope: 'wow.profile'
 }, function (accessToken, refreshToken, profile, done) {
-    var uid = 'bt|' + profile.battletag;
+    profile.uid = 'bt|' + profile.battletag.replace('#', '-');
+    var uid = profile.uid;
     var refFull = _firebaseAdmin2.default.database().ref('/toons');
     var refLink = _firebaseAdmin2.default.database().ref('/users').child(uid).child('/toons');
     (0, _toons.getToons)(accessToken, uid).then(function (toons) {
@@ -85,8 +86,8 @@ var ApiServer = function (_Server) {
         value: function api() {
             this.app.get(URL_BASE, _passport2.default.authenticate('bnet'));
             this.app.get(URL_CALLBACK, _passport2.default.authenticate('bnet', { session: false }), function (req, res) {
-                var tag = req.user.battletag;
-                _firebaseAdmin2.default.auth().createCustomToken('bt|' + tag).then(function (token) {
+                var uid = req.user.uid;
+                _firebaseAdmin2.default.auth().createCustomToken(uid).then(function (token) {
                     res.redirect(HOST_CALLBACK + '?token=' + token);
                 }).catch(function (err) {
                     res.status(500).send(err);

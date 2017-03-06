@@ -31,7 +31,8 @@ passport.use(new Strategy({
   region: 'us',
   scope: 'wow.profile',
 }, (accessToken, refreshToken, profile, done) => {
-  const uid = `bt|${ profile.battletag }`;
+  profile.uid = `bt|${ profile.battletag.replace('#', '-') }`;
+  const uid = profile.uid;
   const refFull = firebase.database().ref('/toons');
   const refLink = firebase.database().ref('/users').child(uid).child('/toons');
 
@@ -53,8 +54,8 @@ class ApiServer extends Server {
   protected api(): void {
     this.app.get(URL_BASE, passport.authenticate('bnet'));
     this.app.get(URL_CALLBACK, passport.authenticate('bnet', { session: false }), (req, res) => {
-      const tag = req.user.battletag;
-      firebase.auth().createCustomToken(`bt|${ tag }`)
+      const uid = req.user.uid;
+      firebase.auth().createCustomToken(uid)
         .then((token) => {
           res.redirect(`${ HOST_CALLBACK }?token=${ token }`);
         })

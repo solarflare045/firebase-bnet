@@ -3,8 +3,10 @@ import passport from 'passport';
 import { Strategy } from 'passport-bnet';
 import http from 'http';
 import firebase from 'firebase-admin';
+import _ from 'lodash';
 
 import { Server } from './express';
+import { getToons } from './toons';
 
 const BNET_ID = config.get<string>('bnet.id');
 const BNET_SECRET = config.get<string>('bnet.secret');
@@ -28,9 +30,24 @@ passport.use(new Strategy({
   callbackURL: BNET_CALLBACK,
   region: 'us',
   scope: 'wow.profile',
-}, (accessToken, refreshToken, profile, done) =>
-  done(null, profile),
-));
+}, (accessToken, refreshToken, profile, done) => {
+  const uid = `bt|${ profile.battletag }`;
+  const refFull = firebase.database().ref('/toons');
+  const refLink = firebase.database().ref('/users').child(uid).child('/toons');
+
+  getToons(accessToken, uid)
+    .then((toons) => {
+      const set = _.keyBy(toons, 'name');
+      const link = _.mapValues(set, _.constant(true));
+      
+      return Promise.all([
+        refFull.update(set),
+        refLink.set(link),
+      ]);
+    })
+    .then(() => done(null, profile))
+    .catch((err) => done(err));
+}));
 
 class ApiServer extends Server {
   protected api(): void {

@@ -20,7 +20,13 @@ var _firebaseAdmin = require('firebase-admin');
 
 var _firebaseAdmin2 = _interopRequireDefault(_firebaseAdmin);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _express = require('./express');
+
+var _toons = require('./toons');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -51,7 +57,18 @@ _passport2.default.use(new _passportBnet.Strategy({
     region: 'us',
     scope: 'wow.profile'
 }, function (accessToken, refreshToken, profile, done) {
-    return done(null, profile);
+    var uid = 'bt|' + profile.battletag;
+    var refFull = _firebaseAdmin2.default.database().ref('/toons');
+    var refLink = _firebaseAdmin2.default.database().ref('/users').child(uid).child('/toons');
+    (0, _toons.getToons)(accessToken, uid).then(function (toons) {
+        var set = _lodash2.default.keyBy(toons, 'name');
+        var link = _lodash2.default.mapValues(set, _lodash2.default.constant(true));
+        return Promise.all([refFull.update(set), refLink.set(link)]);
+    }).then(function () {
+        return done(null, profile);
+    }).catch(function (err) {
+        return done(err);
+    });
 }));
 
 var ApiServer = function (_Server) {
